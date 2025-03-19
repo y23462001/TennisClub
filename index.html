@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自動填入 Google Forms</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+    <h2>正在導向 Google 表單，請稍候...</h2>
+
+    <script>
+        async function main() {
+            await liff.init({ liffId: "你的-LIFF-ID" });
+
+            if (!liff.isLoggedIn()) {
+                liff.login();
+                return;
+            }
+
+            const profile = await liff.getProfile();
+            const displayName = encodeURIComponent(profile.displayName); // 取得 LINE 用戶名稱
+            
+            // Google Forms 預填連結（請換成你的 Google 表單 ID 和欄位 entry ID）
+            const googleFormURL = `https://docs.google.com/forms/d/e/1FAIpQLSe7PEJcDEFfk7jvMgA5wSimuZ646gayXUG-2aEBT3cxE1Qdcw/viewform?usp=pp_url&entry.1123896194=${displayName}`;
+test
+            // 自動跳轉到 Google 表單
+            window.location.href = googleFormURL;
+        }
+
+        main();
+    </script>
+</body>
+</html>
