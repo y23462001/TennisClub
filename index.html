@@ -30,6 +30,12 @@
 
                 document.body.innerHTML = `<h2>正在跳轉 Google 表單...</h2>`;
 
+                // 嘗試使用 LIFF 跳轉至 LINE App
+                liff.openWindow({
+                    url: googleFormURL,
+                    external: true // 使用 external: true 來強制打開 LINE App
+                });
+                
                 setTimeout(() => {
                     console.log("轉跳至 Google 表單:", googleFormURL);
                     window.location.href = googleFormURL;
