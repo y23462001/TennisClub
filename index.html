@@ -10,24 +10,44 @@
     <h2>正在導向 Google 表單，請稍候...</h2>
 
     <script>
-        async function main() {
-            await liff.init({ liffId: "2007088929-dnn7zvzz" });
+        async function main(retryCount = 3) {
+            try {
+                console.log(`初始化 LIFF（剩餘重試次數: ${retryCount}）`);
 
-            if (!liff.isLoggedIn()) {
-                liff.login();
-                return;
+                await liff.init({ liffId: "2007088929-dnn7zvzz" });
+
+                if (!liff.isLoggedIn()) {
+                    console.warn("用戶未登入，正在跳轉到登入...");
+                    liff.login();
+                    return;
+                }
+
+                console.log("取得用戶資訊...");
+                const profile = await liff.getProfile();
+                const displayName = encodeURIComponent(profile.displayName);
+
+                const googleFormURL = `https://docs.google.com/forms/d/e/1FAIpQLSe7PEJcDEFfk7jvMgA5wSimuZ646gayXUG-2aEBT3cxE1Qdcw/viewform?usp=pp_url&entry.1123896194=${displayName}`;
+
+                document.body.innerHTML = `<h2>正在跳轉 Google 表單...</h2>`;
+
+                setTimeout(() => {
+                    console.log("轉跳至 Google 表單:", googleFormURL);
+                    window.location.href = googleFormURL;
+                }, 1000); // 延遲 1 秒執行轉跳
+
+            } catch (error) {
+                console.error("發生錯誤:", error);
+
+                if (retryCount > 0) {
+                    console.warn(`重試中...（剩餘 ${retryCount - 1} 次）`);
+                    setTimeout(() => main(retryCount - 1), 2000); // 2 秒後重試
+                } else {
+                    document.body.innerHTML = `<h2>發生錯誤，請重新整理頁面</h2><p>${error.message}</p>`;
+                }
             }
-
-            const profile = await liff.getProfile();
-            const displayName = encodeURIComponent(profile.displayName); // 取得 LINE 用戶名稱
-            
-            // Google Forms 預填連結（請換成你的 Google 表單 ID 和欄位 entry ID）
-            const googleFormURL = `https://docs.google.com/forms/d/e/1FAIpQLSe7PEJcDEFfk7jvMgA5wSimuZ646gayXUG-2aEBT3cxE1Qdcw/viewform?usp=pp_url&entry.1123896194=${displayName}`;
-
-            // 自動跳轉到 Google 表單
-            window.location.href = googleFormURL;
         }
 
+        // 啟動函式
         main();
     </script>
 </body>
